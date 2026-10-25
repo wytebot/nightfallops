@@ -112,3 +112,11 @@
 - Added server-secret slots for `FLW_CLIENT_ID`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`, and `FLW_WEBHOOK_HASH`; webhook hash comparison now uses a length check and constant-time comparison.
 - Added `npm run android:diagnose` to inspect generated Capacitor/Android artifacts, landscape config, Firebase package alignment, economy endpoint presence and missing Google OAuth client entries.
 - No Flutterwave credentials are embedded in Vite variables, source, APK, AAB, or repository files.
+
+
+## Vercel TypeScript build fixes (2026-10-25)
+- Added `src/vite-env.d.ts` so Vite's `import.meta.env` and the project's environment variables are typed during `tsc -b`.
+- Removed impossible `Recon` comparisons from the paid-skin list; Recon is the default/free skin and is not part of the paid `skins` array.
+- Replaced invalid Phaser `Container.setTint()` / `clearTint()` calls with helpers that tint the container's tint-capable children, preserving container transforms and physics.
+- Removed the unsupported `add` option from Phaser `make.graphics()` configurations (these creator calls are non-added texture-generation graphics by default).
+- Switched the active-pointer touch check to Phaser's supported `wasTouch` flag.
