@@ -11,7 +11,8 @@
     "android:sync": "npx cap sync android && node scripts/configure-android.mjs",
     "test:catalog": "node scripts/check-catalog.mjs",
     "android:diagnose": "node scripts/diagnose-android.mjs",
-    "test:diagnostics": "node scripts/diagnose-android.mjs"
+    "test:diagnostics": "node scripts/diagnose-android.mjs",
+    "test:assets": "node scripts/validate-assets.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.0",

@@ -120,3 +120,25 @@
 - Replaced invalid Phaser `Container.setTint()` / `clearTint()` calls with helpers that tint the container's tint-capable children, preserving container transforms and physics.
 - Removed the unsupported `add` option from Phaser `make.graphics()` configurations (these creator calls are non-added texture-generation graphics by default).
 - Switched the active-pointer touch check to Phaser's supported `wasTouch` flag.
+
+## v16 — Weapon art, recorded audio and character validation
+- **Weapon art:** the armory chart was cut into transparent, horizontal PNGs under `public/weapons/` (pistol, revolver, SMG, shotgun, AK assault rifle, M4 carbine, DMR marksman, LMG machine gun, anti-material rifle, rocket launcher, minigun). The store shelf, the weapon popup and the soldiers' hands now use them; weapons without chart art (grenades, plasma, rail, Aether Reaver, flamethrower) keep their CSS drawing.
+- **Four new weapons from the chart:** Revolver, Carbine (M4), Anti-Material Rifle and Minigun, added to `catalog.ts` in ascending DPS/price order and to the server price table in `functions/index.js`. `npm run test:catalog` now checks 17 weapons.
+- **Audio:** the action trailer loops seamlessly (16 s, equal-power wrap) as background music — softly in menus, full level in missions and lifted slightly in combat. Recorded gunshots (per-weapon pitch/volume, voice-limited), footsteps (earth/rock) and UI clicks replace the synth versions, which remain as automatic fallbacks. Audio starts on the first tap/key, pauses when the app is hidden and respects the Sound toggle and volume sliders.
+- **Characters validated:** removed the stray "NO. 06" label from `recon.png`; kept the front-facing art upright while a soldier aims (it previously rotated with the aim angle, so soldiers appeared sideways/upside-down); enemies get a light red tint so they read differently from allies.
+- **New check:** `npm run test:assets` validates operator/weapon PNGs (transparency, stray fragments), audio files and server weapon prices.
+
+
+## 2026-10-25 — Audio slot preparation and audit
+- Added `docs/AUDIT.md`, `docs/ASSET_SLOTS.md`, and `docs/INSTALL.md` to document the initial source audit, planned replaceable assets, and installation/release workflow.
+- Added supplied sound effects to per-weapon `fire.mp3` slots and shared explosion, bullet-whiz, and enemy-pain assets. These slots are staged for integration; the existing audio runtime has not yet been changed to read per-weapon slots.
+- Build verification attempted, but dependency installation timed out in this environment. A clean build is not verified.
+- The referenced copyright certificate was not included in the uploaded files; licensing remains unverified.
+
+## 2026-10-25 — Command deck and audio-slot integration
+- Replaced the long home-page presentation with a fixed landscape command deck and sequential Mission → Zone → Operator cards; selection panels animate in/out instead of extending the page vertically.
+- Added persistent command-deck access to armory, upgrades, settings and sign-in; added quick deploy and daily bonus actions.
+- Removed the React `onPointerMove` hack that manually overwrote Phaser's `activePointer` coordinates. A complete twin-stick aim bridge is still outstanding.
+- Added on-demand per-weapon fire sample loading with shared/synth fallback, and connected supplied explosion/pain samples to shared SFX actions.
+- Added a PWA manifest, master SVG icon, basic service worker, install metadata, and implementation/asset/install audit documents.
+- Verification: `npm run test:catalog` and `npm run test:assets` pass. `npm install` timed out and `npm run build` fails in this environment because installed dependencies/types are unavailable; no gameplay browser test or Android build was run.

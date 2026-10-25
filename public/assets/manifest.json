@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "description": "Drop-in asset registry for future atlas and texture replacement. Existing assets continue to be loaded by their current paths until the Phaser asset pipeline consumes this manifest.",
+  "budget": { "firstLoadBytesMax": 26214400 },
+  "textures": {
+    "operator-recon": { "src": "../operators/recon.png", "format": "png", "replaceable": true },
+    "operator-heavy": { "src": "../operators/heavy.png", "format": "png", "replaceable": true },
+    "operator-shadow": { "src": "../operators/shadow.png", "format": "png", "replaceable": true }
+  },
+  "atlases": {},
+  "audio": {
+    "music": "../audio/music-action-loop.mp3",
+    "sharedExplosion": "../audio/sfx-bomb-explosion.mp3",
+    "enemyPain": "../audio/sfx-enemy-pain.mp3"
+  }
+}

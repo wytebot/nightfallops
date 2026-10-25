@@ -1,0 +1,14 @@
+{
+  "name": "Nightfall Ops",
+  "short_name": "Nightfall Ops",
+  "description": "Offline-first tactical jungle survival shooter.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#07100d",
+  "theme_color": "#07100d",
+  "icons": [
+    {"src":"./icons/nightfall.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

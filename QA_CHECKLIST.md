@@ -112,3 +112,11 @@ Use a physical Android phone in landscape and a laptop/desktop browser. Mark eac
 - [ ] Run `npm run android:diagnose` after `npx cap add android`, `npm run build`, and `npm run android:sync`.
 - [ ] Complete native Google sign-in tests on debug and release-signed APK/AAB after registering both SHA-1 fingerprints and refreshing `google-services.json`.
 - [ ] Complete end-to-end payment tests with Flutterwave test credentials, duplicate webhook delivery, invalid hash, cancelled checkout, and resume-from-checkout scenarios.
+
+## v16 additions
+- [ ] Music starts after the first tap, loops with no audible gap, is quieter in menus and stops when the Sound toggle is off or the app is backgrounded.
+- [ ] Each weapon sounds different (pitch/volume); minigun and squad fire do not distort or pile up.
+- [ ] Footsteps play on earth/rock; water keeps the synth splash.
+- [ ] Store shelf shows chart art for 11 weapons, scrolls horizontally on touch and mouse; popup shows large art with Cancel.
+- [ ] Soldiers stay upright while aiming; the held weapon follows the aim and flips when aiming left; enemies look reddish.
+- [ ] Buy Revolver/Carbine/AMR/Minigun with coins against the deployed server function (new prices must be deployed).

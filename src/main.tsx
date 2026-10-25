@@ -8,3 +8,5 @@ installDiagnostics();
 logDiagnostic('info','startup',`App booted (${navigator.userAgent.includes('wv')?'Android WebView or embedded browser':'browser runtime'})`);
 
 createRoot(document.getElementById('root')!).render(<React.StrictMode><ErrorBoundary><App /></ErrorBoundary></React.StrictMode>);
+
+if ('serviceWorker' in navigator && import.meta.env.PROD) { window.addEventListener('load', () => { void navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(error => console.warn('[Nightfall] Offline cache unavailable', error)); }); }

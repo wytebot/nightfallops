@@ -1,4 +1,5 @@
-// Entirely procedural audio: no downloads, no remote fonts/assets, works offline after the first gesture.
+// Audio engine: recorded samples bundled in /public/audio (background music loop, gunshots, footsteps, UI click)
+// with the original procedural synth kept as an automatic fallback. Everything is local, so it works offline.
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let musicBus: GainNode | null = null;
@@ -14,6 +15,40 @@ let ambienceOscillators: OscillatorNode[] = [];
 let ambienceLocation = '';
 let combatIntensity = 0;
 const noiseCache = new Map<string, AudioBuffer>();
+
+// ---- Recorded samples ------------------------------------------------------------------------
+const SAMPLE_FILES: Record<string, string> = {
+  music: '/audio/music-action-loop.mp3', click: '/audio/sfx-click.mp3', bombExplosion: '/audio/sfx-bomb-explosion.mp3', bulletWhiz: '/audio/sfx-bullet-whiz.mp3', enemyPain: '/audio/sfx-enemy-pain.mp3',
+  gun1: '/audio/sfx-gun-1.mp3', gun2: '/audio/sfx-gun-2.mp3', gun3: '/audio/sfx-gun-3.mp3', gunHeavy: '/audio/sfx-gun-heavy.mp3',
+  step1: '/audio/sfx-step-1.mp3', step2: '/audio/sfx-step-2.mp3', step3: '/audio/sfx-step-3.mp3',
+  step4: '/audio/sfx-step-4.mp3', step5: '/audio/sfx-step-5.mp3', step6: '/audio/sfx-step-6.mp3'
+};
+const MUSIC_LOOP_SECONDS = 16;      // exact musical length of the loop (MP3 encoder padding is ignored)
+const MUSIC_TRIM = 1.6;             // sample gain so the default Music slider (34%) sits clearly under gunfire
+const MUSIC_MENU_SCALE = 0.6;       // quieter bed while browsing menus
+const samples = new Map<string, AudioBuffer>();
+const weaponSamples = new Map<string, AudioBuffer>();
+const weaponSampleLoads = new Map<string, Promise<void>>();
+const BASE = import.meta.env.BASE_URL || '/';
+const assetUrl = (path: string) => `${BASE}${path.replace(/^\//, '')}`;
+const WEAPON_IDS = ['pistol','revolver','smg','assault-rifle','carbine','marksman','machine-gun','shotgun','anti-material-rifle','minigun','rpg','grenade-launcher','hand-grenade','flamethrower','plasma-rifle','rail-cannon','legendary'];
+function loadWeaponSample(id: string) {
+  if (weaponSamples.has(id) || weaponSampleLoads.has(id)) return weaponSampleLoads.get(id);
+  const c = audio(); if (!c) return;
+  const task = fetch(assetUrl(`/audio/weapons/${id}/fire.mp3`)).then(r => { if (!r.ok) throw new Error('missing slot'); return r.arrayBuffer(); }).then(data => decode(c, data)).then(buffer => { weaponSamples.set(id, buffer); }).catch(() => { /* shared samples and synth remain the guaranteed fallback */ }).finally(() => { weaponSampleLoads.delete(id); });
+  weaponSampleLoads.set(id, task); return task;
+}
+export function checkWeaponAudioSlots() {
+  const report = WEAPON_IDS.map(id => ({ id, loaded: weaponSamples.has(id), expected: assetUrl(`/audio/weapons/${id}/fire.mp3`) }));
+  if (typeof console !== 'undefined') console.info('[Nightfall audio] Per-weapon slots are loaded on demand; shared fallback is active for any missing slot.', report);
+  return report;
+}
+let samplesLoading: Promise<void> | null = null;
+let musicSource: AudioBufferSourceNode | null = null;
+let musicGain: GainNode | null = null;
+let musicScene: 'menu' | 'mission' = 'menu';
+let activeVoices = 0;
+let gunVariant = 0;
 
 function audio(): AudioContext | null {
   if (!enabled || typeof window === 'undefined') return null;
@@ -46,11 +81,81 @@ function applyLevels() {
   musicBus.gain.setTargetAtTime(musicLevel, now, 0.08);
   sfxBus.gain.setTargetAtTime(sfxLevel, now, 0.025);
 }
+function decode(c: AudioContext, data: ArrayBuffer): Promise<AudioBuffer> {
+  // Callback form keeps older WebViews/Safari working as well as the promise form.
+  return new Promise((resolve, reject) => { c.decodeAudioData(data, resolve, reject); });
+}
+function loadSamples(): Promise<void> {
+  if (samplesLoading) return samplesLoading;
+  const c = audio(); if (!c) return Promise.resolve();
+  samplesLoading = Promise.all(Object.entries(SAMPLE_FILES).map(async ([key, url]) => {
+    try { const res = await fetch(url); if (!res.ok) return; samples.set(key, await decode(c, await res.arrayBuffer())); }
+    catch { /* missing or undecodable file: the procedural synth fallback keeps working */ }
+  })).then(() => { if (enabled) startMusic(); });
+  return samplesLoading;
+}
+function playSample(key: string, opts: { volume?: number; rate?: number; bus?: 'music' | 'sfx'; lowpass?: number; maxVoices?: number } = {}): boolean {
+  const c = audio(), buffer = samples.get(key), dest = destination(opts.bus ?? 'sfx');
+  if (!c || !buffer || !dest) return false;
+  if (activeVoices >= (opts.maxVoices ?? 10)) return true; // voice limit: skip quietly so fast weapons never pile up
+  const source = c.createBufferSource(), gain = c.createGain();
+  source.buffer = buffer; source.playbackRate.value = opts.rate ?? 1; gain.gain.value = opts.volume ?? 1;
+  let node: AudioNode = source;
+  if (opts.lowpass) { const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opts.lowpass; source.connect(f); node = f; }
+  node.connect(gain); gain.connect(dest);
+  activeVoices++;
+  source.onended = () => { activeVoices = Math.max(0, activeVoices - 1); try { gain.disconnect(); } catch { /* already disconnected */ } };
+  source.start();
+  return true;
+}
+function playWeaponSlot(id: string, volume: number, rate: number): boolean {
+  const c = audio(), buffer = weaponSamples.get(id), dest = destination('sfx');
+  if (!c || !buffer || !dest) return false;
+  if (activeVoices >= 10) return true;
+  const source = c.createBufferSource(), gain = c.createGain(); source.buffer = buffer;
+  source.playbackRate.value = rate * (1 + (Math.random() - .5) * .045); gain.gain.value = volume;
+  source.connect(gain); gain.connect(dest); activeVoices++;
+  source.onended = () => { activeVoices = Math.max(0, activeVoices - 1); try { gain.disconnect(); } catch { /* already disconnected */ } };
+  source.start(); return true;
+}
+function applyMusicScene(fade = 0.6) {
+  if (!ctx || !musicGain) return;
+  const target = MUSIC_TRIM * (musicScene === 'mission' ? 1 + combatIntensity * 0.12 : MUSIC_MENU_SCALE);
+  musicGain.gain.cancelScheduledValues(ctx.currentTime);
+  musicGain.gain.setTargetAtTime(target, ctx.currentTime, Math.max(0.05, fade / 3));
+}
+function startMusic() {
+  if (musicSource || !enabled) return;
+  const c = audio(), buffer = samples.get('music'), bus = destination('music');
+  if (!c || !buffer || !bus) return;
+  musicGain = c.createGain(); musicGain.gain.value = 0;
+  const source = c.createBufferSource();
+  source.buffer = buffer; source.loop = true; source.loopStart = 0; source.loopEnd = Math.min(buffer.duration, MUSIC_LOOP_SECONDS);
+  source.connect(musicGain); musicGain.connect(bus); source.start();
+  musicSource = source; applyMusicScene(1.4);
+}
+function stopMusic() {
+  if (musicSource) { try { musicSource.stop(); } catch { /* already stopped */ } try { musicSource.disconnect(); } catch { /* ok */ } musicSource = null; }
+  if (musicGain) { try { musicGain.disconnect(); } catch { /* ok */ } musicGain = null; }
+}
+/** Menus play the action loop softly; missions play it at full level and lift it slightly in combat. */
+export function setMusicScene(scene: 'menu' | 'mission') { musicScene = scene; applyMusicScene(0.9); }
 export function setAudioEnabled(value: boolean) {
   enabled = value;
-  if (!value) stopAmbient();
-  else if (ambienceLocation) startAmbient(ambienceLocation);
+  if (!value) { stopAmbient(); stopMusic(); }
+  else { if (ambienceLocation) startAmbient(ambienceLocation); void loadSamples().then(startMusic); }
   applyLevels();
+}
+if (typeof window !== 'undefined') {
+  // Browsers/WebViews only allow audio after a gesture: load samples and start the loop on the first tap or key press.
+  const unlock = () => { if (!enabled) return; audio(); void loadSamples(); };
+  window.addEventListener('pointerdown', unlock, { passive: true });
+  window.addEventListener('keydown', unlock);
+  // Never keep playing while the app is backgrounded or the tab is hidden.
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) void ctx.suspend(); else if (enabled) void ctx.resume();
+  });
 }
 export function setAudioLevels(levels: { master?: number; music?: number; sfx?: number }) {
   if (levels.master !== undefined) masterLevel = Math.max(0, Math.min(1, levels.master));
@@ -100,6 +205,7 @@ export function startAmbient(location = 'Blackroot Jungle') {
   ambienceLocation = location;
   if (ambientTimer || !enabled) return;
   const c = audio(), bus = destination('music'); if (!c || !bus) return;
+  if (!samples.has('music')) {
   const low = c.createOscillator(), filter = c.createBiquadFilter(), gain = c.createGain();
   low.type = 'triangle'; low.frequency.value = location.includes('Street') || location.includes('School') ? 46 : 38;
   filter.type = 'lowpass'; filter.frequency.value = 130 + combatIntensity * 620;
@@ -112,6 +218,7 @@ export function startAmbient(location = 'Blackroot Jungle') {
   windFilter.type = 'lowpass'; windFilter.frequency.value = 190;
   windGain.gain.value = 0.008; wind.connect(windFilter); windFilter.connect(windGain); windGain.connect(bus); wind.start();
   ambienceOscillators.push(wind); ambienceNodes.push(windFilter, windGain);
+  }
   const chirp = () => {
     if (!enabled) return;
     if (location.includes('River')) noise(.32, .009, 540, 'music');
@@ -123,25 +230,56 @@ export function startAmbient(location = 'Blackroot Jungle') {
 }
 export function setCombatIntensity(active: boolean) {
   combatIntensity = active ? 1 : 0;
+  applyMusicScene(0.5);
   if (!ctx || !ambienceNodes.length) return;
   const filter = ambienceNodes.find(n => n instanceof BiquadFilterNode) as BiquadFilterNode | undefined;
   if (filter) filter.frequency.setTargetAtTime(active ? 760 : 190, ctx.currentTime, 0.25);
 }
 export function stopAmbient() { stopAmbienceNodes(); }
+type GunProfile = { rate: number; volume: number; heavy?: boolean };
+// Sound character per weapon: pitch (playback rate) and loudness over the recorded shot samples.
+const GUN_PROFILES: Record<string, GunProfile> = {
+  pistol: { rate: 1.08, volume: 0.7 }, revolver: { rate: 0.86, volume: 0.9 }, smg: { rate: 1.32, volume: 0.5 },
+  'assault-rifle': { rate: 1.0, volume: 0.62 }, carbine: { rate: 1.1, volume: 0.6 }, marksman: { rate: 0.82, volume: 0.8 },
+  'machine-gun': { rate: 1.18, volume: 0.55 }, 'anti-material-rifle': { rate: 0.62, volume: 1, heavy: true },
+  minigun: { rate: 1.42, volume: 0.42 }, shotgun: { rate: 0.74, volume: 0.95, heavy: true }
+};
+function playGun(profile: GunProfile, volumeScale = 1) {
+  const key = profile.heavy ? 'gunHeavy' : (['gun1', 'gun2', 'gun3'] as const)[gunVariant++ % 3];
+  playSample(key, { volume: profile.volume * volumeScale, rate: profile.rate * (1 + (Math.random() - 0.5) * 0.08), maxVoices: 8 });
+}
 export const sfx = {
-  click: () => tone(620, .035, 'square', .018, -100),
-  select: () => { tone(420, .05, 'triangle', .025); setTimeout(() => tone(660, .07, 'triangle', .02), 45); },
+  click: () => { if (!playSample('click', { volume: 0.55 })) tone(620, .035, 'square', .018, -100); },
+  select: () => { if (!playSample('click', { volume: 0.7, rate: 1.3 })) { tone(420, .05, 'triangle', .025); setTimeout(() => tone(660, .07, 'triangle', .02), 45); } },
+  /** Weapon fire. `volumeScale` lets squad members fire quieter than the player. */
+  weapon: (id: string, kind?: string, volumeScale = 1) => {
+    if (kind === 'rocket') { playSample('gunHeavy', { volume: 0.58 * volumeScale, rate: 0.5, maxVoices: 6 }); sfx.launcher(); return; }
+    if (kind === 'grenade' || id === 'hand-grenade' || id === 'grenade-launcher') { sfx.launcher(); void loadWeaponSample(id); return; }
+    if (kind === 'flame' || id === 'flamethrower') { sfx.flame(); void loadWeaponSample(id); return; }
+    const profile = GUN_PROFILES[id] || ({'plasma-rifle':{rate:1.12,volume:.56},'rail-cannon':{rate:.58,volume:.95,heavy:true},legendary:{rate:.9,volume:.82},rpg:{rate:.52,volume:.9,heavy:true},'grenade-launcher':{rate:.7,volume:.8,heavy:true}} as Record<string,GunProfile>)[id];
+    if (playWeaponSlot(id, (profile?.volume ?? .62) * volumeScale, profile?.rate ?? 1)) return;
+    void loadWeaponSample(id);
+    if (profile && samples.has('gun1')) { playGun(profile, volumeScale); return; }
+    if (id === 'shotgun') sfx.shotgun(); else sfx.assault();
+  },
   shoot: () => { noise(.085, .09, 1800); tone(95, .09, 'sawtooth', .045, -35); },
   assault: () => { noise(.052, .072, 2200); tone(118, .06, 'sawtooth', .038, -42); },
   shotgun: () => { noise(.19, .13, 1100); tone(68, .2, 'sawtooth', .065, -48); tone(880, .035, 'square', .012, -550); },
   launcher: () => { noise(.16, .11, 850); tone(92, .22, 'sawtooth', .05, -45); tone(420, .12, 'triangle', .025, -260); },
   flame: () => { noise(.11, .055, 1500); tone(165, .12, 'sawtooth', .022, 85); },
   reload: () => { tone(480, .025, 'square', .012, -160); setTimeout(() => tone(740, .045, 'triangle', .018, -100), 110); },
-  enemyShot: () => { noise(.07, .045, 1500); tone(125, .06, 'square', .018, -25); },
+  enemyShot: () => { if (!playSample('gun3', { volume: 0.3, rate: 1.3, maxVoices: 8 })) { noise(.07, .045, 1500); tone(125, .06, 'square', .018, -25); } },
   hit: () => { noise(.09, .055, 700); tone(180, .1, 'sawtooth', .025, -90); },
-  death: () => { tone(145, .65, 'sawtooth', .055, -100); setTimeout(() => tone(78, .9, 'sine', .035, -30), 240); },
-  step: (surface = 'earth') => { noise(.055, surface === 'water' ? .016 : .012, surface === 'rock' ? 780 : 420); },
-  bomb: () => { noise(.5, .14, 600); tone(70, .48, 'sawtooth', .065, -45); setTimeout(() => noise(.38, .035, 320), 140); },
+  death: () => { if (playSample('enemyPain', { volume: .34, rate: .92 + Math.random() * .16, maxVoices: 3 })) return; tone(145, .65, 'sawtooth', .055, -100); setTimeout(() => tone(78, .9, 'sine', .035, -30), 240); },
+  step: (surface = 'earth') => {
+    if (surface !== 'water' && samples.has('step1')) {
+      const rock = surface === 'rock';
+      playSample(`step${1 + Math.floor(Math.random() * 6)}`, { volume: rock ? 0.5 : 0.34, rate: (rock ? 1 : 0.82) * (1 + (Math.random() - 0.5) * 0.1), lowpass: rock ? undefined : 2200, maxVoices: 4 });
+      return;
+    }
+    noise(.055, surface === 'water' ? .016 : .012, surface === 'rock' ? 780 : 420);
+  },
+  bomb: () => { if (playSample('bombExplosion', { volume: .72, rate: .88 + Math.random() * .18, maxVoices: 3 })) return; noise(.5, .14, 600); tone(70, .48, 'sawtooth', .065, -45); setTimeout(() => noise(.38, .035, 320), 140); },
   coin: () => { tone(880, .08, 'sine', .045); setTimeout(() => tone(1320, .12, 'sine', .04), 70); },
   success: () => { tone(520, .12, 'triangle', .04); setTimeout(() => tone(780, .15, 'triangle', .04), 110); setTimeout(() => tone(1040, .22, 'triangle', .04), 240); },
   alert: () => { tone(260, .12, 'square', .025); setTimeout(() => tone(330, .14, 'square', .025), 130); },
