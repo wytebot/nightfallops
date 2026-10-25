@@ -15,3 +15,9 @@
 6. Follow the Firebase SHA-1/SHA-256 instructions in the project README and register the signing certificate fingerprints in Firebase before testing Google sign-in in a signed build.
 
 Do not describe Android as release-ready until debug APK installation, sign-in, purchases, landscape behavior and offline gameplay have been tested on device.
+
+## Touch controls and ammunition
+
+- On a touchscreen, drag on the **left half** of the gameplay canvas to aim and fire; drag on the **right half** to move. Use two fingers for simultaneous aiming and movement. Keep fingers away from the action buttons at the lower-right edge.
+- Ammo is no longer infinite. The HUD shows current magazine / reserve; reload begins automatically when the magazine empties. Reserve ammo is finite for the mission.
+- Test on a landscape phone with two simultaneous touch points. Browser/emulator support varies, so confirm pointer-up/cancel handling and the reload counter on the target device.

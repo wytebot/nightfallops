@@ -99,3 +99,102 @@ button:active{transform:scale(.965);filter:brightness(1.18)}
 html,body,#root{width:100%;height:100%;min-height:100%;overflow:hidden}body{overscroll-behavior:none}.app-shell{width:100vw;height:100dvh;min-height:0;overflow:hidden}.home-screen.command-lobby{position:relative;width:100%;height:100dvh;max-width:none;margin:0;padding:0 3.1vw 2.2vh;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 68% 40%,#253b2a 0%,#101e16 38%,#07100c 76%)}.command-lobby .topbar{position:relative;z-index:10;height:clamp(54px,10vh,78px);border-bottom-color:#a2c28b20}.command-lobby .brand-mark{clip-path:none;border-radius:11px}.command-lobby .lobby-backdrop{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:linear-gradient(90deg,#07100cf2 0%,#08120bd9 36%,#09120b30 73%,#07100c77 100%)}.lobby-moon{position:absolute;right:19%;top:8%;width:clamp(90px,12vw,190px);aspect-ratio:1;border-radius:50%;background:#d9e4b4;opacity:.25;box-shadow:0 0 90px 25px #bddb9366}.lobby-ridge{position:absolute;bottom:-8%;height:55%;width:75%;border-radius:50% 50% 0 0;background:#1b3523;filter:blur(1px)}.ridge-a{right:-8%;transform:rotate(-9deg)}.ridge-b{right:20%;height:40%;background:#12271a;transform:rotate(8deg)}.lobby-trees{position:absolute;inset:28% 0 0;background:linear-gradient(0deg,#06100b 0%,transparent 80%),repeating-linear-gradient(90deg,transparent 0 5.2vw,#061009 5.3vw 5.7vw,transparent 5.8vw 8.2vw);clip-path:polygon(0 42%,5% 22%,10% 48%,15% 7%,20% 45%,25% 18%,31% 50%,36% 8%,41% 44%,46% 21%,52% 53%,57% 6%,62% 43%,68% 17%,73% 49%,78% 10%,84% 43%,90% 18%,95% 47%,100% 14%,100% 100%,0 100%);opacity:.68}.lobby-operator{position:absolute;right:7%;bottom:-2%;height:87%;width:37%;display:flex;align-items:flex-end;justify-content:center;opacity:.84;filter:drop-shadow(0 12px 34px #000b)}.lobby-operator img{height:100%;max-width:100%;object-fit:contain;object-position:bottom;animation:lobby-breathe 4.5s ease-in-out infinite}.lobby-fog{position:absolute;inset:auto 0 0;height:28%;background:linear-gradient(0deg,#07100c 0%,#07100c99 40%,transparent 100%)}@keyframes lobby-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.008)}}.lobby-content{position:relative;z-index:2;height:calc(100% - clamp(54px,10vh,78px) - 3vh);display:flex;flex-direction:column;max-width:72%;padding-top:2vh}.lobby-title{flex-shrink:0}.lobby-title h1{font:900 clamp(25px,3.4vw,48px)/1 LocalDisplay,InterLocal,sans-serif;letter-spacing:.07em;margin:9px 0 6px;text-shadow:0 4px 20px #0009}.lobby-title p{margin:0;color:#a7b8a5;font-size:clamp(9px,1vw,13px);max-width:560px}.wizard-stage{flex:1;min-height:0;margin-top:2vh;animation:wizard-clear .36s cubic-bezier(.2,.8,.2,1) both}@keyframes wizard-clear{from{opacity:0;transform:translateX(28px);filter:blur(4px)}to{opacity:1;transform:translateX(0);filter:blur(0)}}.wizard-cards{height:100%;display:grid;gap:clamp(7px,1vw,14px);min-height:0}.mode-wizard{grid-template-columns:repeat(4,minmax(0,1fr))}.zone-wizard{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.operator-wizard{grid-template-columns:repeat(3,minmax(0,1fr));max-width:75%}.wizard-card{position:relative;min-width:0;min-height:0;overflow:hidden;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;gap:clamp(4px,.7vh,9px);padding:clamp(9px,1.25vw,17px);border:1px solid #8da27b35;background:linear-gradient(145deg,#15261bdc,#09120fe8);color:#eef3e7;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;isolation:isolate}.wizard-card:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 80% 15%,#b7e47e18,transparent 60%),linear-gradient(0deg,#06100df5 0%,transparent 82%)}.wizard-card:hover{transform:translateY(-3px);border-color:#b7e47e99}.wizard-card.chosen{border-color:#c6ef92;box-shadow:inset 0 0 0 1px #b7e47e45,0 0 24px #b7e47e12;background:linear-gradient(145deg,#283a25ee,#0c1711f5)}.wizard-index{position:absolute;left:clamp(8px,1vw,14px);top:clamp(8px,1vw,14px);font:9px LocalMono,monospace;letter-spacing:.1em;color:#a8b9a2}.wizard-icon{display:grid;place-items:center;width:clamp(35px,4vw,54px);height:clamp(35px,4vw,54px);margin-bottom:auto;border:1px solid #93b67a55;background:#18291c;color:#c1e995}.wizard-card>b{font:800 clamp(13px,1.45vw,20px) LocalDisplay,sans-serif;letter-spacing:.07em}.wizard-card>small{font-size:clamp(8px,.8vw,11px);line-height:1.45;color:#a7b6a5}.wizard-select{font:800 clamp(7px,.7vw,9px) LocalMono,monospace;letter-spacing:.05em;color:#c5e8a0;margin-top:3px}.zone-card{padding:clamp(7px,.85vw,12px)}.zone-card .zone-art{font-size:clamp(24px,3vw,40px);color:#a8c88e;margin:auto 0 2px;text-shadow:0 0 22px #a8c88e44}.zone-card>b{font-size:clamp(10px,1vw,14px)}.zone-card>small{font-size:clamp(7px,.65vw,9px)}.operator-choice{align-items:flex-start;padding-top:28px}.operator-choice>img{position:absolute;z-index:-1;inset:0 0 0 0;width:100%;height:100%;object-fit:contain;object-position:center bottom;opacity:.65;filter:drop-shadow(0 8px 18px #000b)}.operator-choice:after{content:"";position:absolute;inset:30% 0 0;z-index:-1;background:linear-gradient(transparent,#07100cf5 90%)}.operator-choice>b,.operator-choice>small,.operator-choice>.wizard-select{position:relative}.operator-choice.locked{filter:saturate(.45)}.lobby-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:1.2vh;flex-shrink:0}.wizard-progress{display:flex;align-items:center;gap:clamp(5px,.8vw,12px);color:#526653;font:9px LocalMono,monospace;white-space:nowrap}.wizard-progress span{display:flex;gap:5px;align-items:center}.wizard-progress span b{font-weight:500}.wizard-progress span.active{color:#d4f1b1}.wizard-progress i{width:clamp(12px,2vw,32px);height:1px;background:#51664b}.lobby-quick{display:flex;gap:7px}.lobby-quick .outline-btn{font-size:8px;padding:9px 10px}.wizard-nav{display:flex;justify-content:flex-end;gap:8px}.wizard-nav .primary-btn{min-width:clamp(150px,18vw,240px);padding:13px 16px;box-shadow:0 0 24px #b7e47e12}.wizard-nav .deploy-btn{background:#f2ce63;border-color:#ffe39a;color:#171608;animation:deploy-pulse 2.5s ease-in-out infinite}@keyframes deploy-pulse{0%,100%{box-shadow:0 0 0 0 #f2ce6330}50%{box-shadow:0 0 0 7px #f2ce6300,0 0 24px #f2ce6340}}.lobby-status{position:absolute;left:3.1vw;bottom:1vh;z-index:4;display:flex;gap:clamp(8px,1.5vw,22px);color:#8b9c88;font:8px LocalMono,monospace;letter-spacing:.04em}.lobby-status span{display:flex;align-items:center;gap:5px}.lobby-status svg{color:#b7d995}.command-lobby .base-drawer{z-index:30}.game-screen{width:100vw;height:100dvh;min-height:0}.game-host{touch-action:none;overscroll-behavior:none}.mobile-controls,.joystick,.right-controls,.fire-btn,.control-btn{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 @media(max-height:430px){.command-lobby .topbar{height:48px}.lobby-content{height:calc(100% - 54px - 2vh);padding-top:1vh}.lobby-title h1{font-size:clamp(22px,3vw,34px);margin:5px 0}.lobby-title p{font-size:9px}.wizard-stage{margin-top:1vh}.wizard-card{padding:7px;gap:3px}.wizard-icon{width:30px;height:30px}.lobby-footer{margin-top:.6vh}.wizard-nav .primary-btn{padding:9px 12px}.lobby-status{bottom:.5vh}.lobby-operator{height:82%;right:3%}}
 @media(max-width:760px) and (orientation:landscape){.home-screen.command-lobby{padding-inline:2vw}.command-lobby .topbar{height:48px}.command-lobby .brand b{font-size:17px}.command-lobby .brand small{font-size:7px}.command-lobby .brand-mark{width:33px;height:33px}.command-lobby .top-actions{gap:5px}.command-lobby .icon-btn{width:31px;height:31px}.lobby-content{height:calc(100% - 53px - 2vh);max-width:80%;padding-top:1vh}.lobby-title h1{font-size:clamp(21px,3.2vw,31px);margin:5px 0}.lobby-title p{font-size:8px}.wizard-stage{margin-top:1vh}.wizard-card{padding:7px;gap:3px}.wizard-card>b{font-size:clamp(10px,1.8vw,14px)}.wizard-card>small{font-size:7px}.wizard-select{font-size:7px}.wizard-index{font-size:7px}.wizard-icon{width:29px;height:29px}.lobby-footer{margin-top:.6vh}.lobby-quick .outline-btn{font-size:7px;padding:7px}.wizard-nav .primary-btn{min-width:130px;padding:9px 10px;font-size:9px}.lobby-status{left:2vw;bottom:.4vh;font-size:7px}.operator-wizard{max-width:70%}}
+/* Location cards use original, local, lightweight battlefield artwork rather than repeated glyph tiles. */
+.zone-card{background-color:#09120e;background-size:cover;background-position:center;isolation:isolate}
+.zone-card:before{background:linear-gradient(0deg,#050b08 0%,#07100dce 28%,#07100d1c 100%),linear-gradient(90deg,#07100d70,transparent 70%)}
+.zone-card .zone-art{align-self:flex-end;font-size:clamp(17px,2vw,27px);margin:0 0 auto;text-shadow:0 2px 14px #000}
+.zone-card.loc-0{background-image:url('/locations/blackroot-jungle.svg')}
+.zone-card.loc-1{background-image:url('/locations/abandoned-school.svg')}
+.zone-card.loc-2{background-image:url('/locations/ghost-street.svg')}
+.zone-card.loc-3{background-image:url('/locations/misty-highlands.svg')}
+.zone-card.loc-4{background-image:url('/locations/sunken-camp.svg')}
+.zone-card.loc-5{background-image:url('/locations/river-outpost.svg')}
+.zone-card.loc-6{background-image:url('/locations/broken-quarry.svg')}
+.zone-card.loc-7{background-image:url('/locations/redwood-basin.svg')}
+.zone-card.loc-8{background-image:url('/locations/flooded-village.svg')}
+.zone-card.loc-9{background-image:url('/locations/ashen-forest.svg')}
+.zone-card.chosen{box-shadow:inset 0 0 0 2px #c6ef92,0 0 24px #b7e47e18}
+.ammo-reloading{color:#f2ce63!important;animation:ammo-pulse .65s ease-in-out infinite alternate}@keyframes ammo-pulse{to{opacity:.45}}
+/* Touch input is handled by Phaser's dual-stick layer; legacy MOVE/FIRE pads are hidden to prevent conflicting gestures. */
+.mobile-controls .joystick,.mobile-controls .fire-btn{display:none!important}
+.mobile-controls .right-controls{pointer-events:auto}
+
+/* FIELD-OVERHAUL: illustrated tactical cards and cinematic command palette */
+.command-lobby{color:#f4f5ef;background:#090e0d}
+.command-lobby .lobby-content{position:relative;z-index:2}
+.command-lobby .lobby-title h1{font-family:LocalDisplay,Impact,sans-serif;letter-spacing:.11em;text-transform:uppercase;text-shadow:0 3px 18px #000;font-size:clamp(1.5rem,3.4vw,3.4rem)}
+.command-lobby .lobby-title p{color:#c1cbc4;max-width:58ch}
+.command-lobby .wizard-stage{background:linear-gradient(135deg,rgba(13,24,28,.92),rgba(12,19,17,.91));border:1px solid rgba(137,177,179,.6);box-shadow:0 22px 70px #0009,inset 0 1px #ffffff18;backdrop-filter:blur(8px)}
+.command-lobby .wizard-cards{gap:clamp(9px,1.4vw,20px)}
+.command-lobby .wizard-card{position:relative;isolation:isolate;overflow:hidden;text-align:left;border:1px solid #7d9290;background:linear-gradient(155deg,#344441,#141c1b 75%);box-shadow:0 8px 22px #0007;transition:transform .2s,border-color .2s,filter .2s}
+.command-lobby .wizard-card:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 18%,rgba(3,7,6,.18) 42%,rgba(3,7,6,.96) 100%);pointer-events:none}
+.command-lobby .wizard-card:after{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;opacity:.9;filter:saturate(.82) contrast(1.08);pointer-events:none}
+.command-lobby .wizard-card:hover{transform:translateY(-4px);border-color:#e6d47a;filter:brightness(1.08)}
+.command-lobby .wizard-card.chosen{border:2px solid #e5d15b;box-shadow:0 0 0 1px #e5d15b55,0 12px 30px #0009}
+.command-lobby .wizard-index{color:#f0d85b;text-shadow:0 2px 4px #000}
+.command-lobby .wizard-card b{font-family:LocalDisplay,Impact,sans-serif;letter-spacing:.07em;text-shadow:0 2px 6px #000}
+.command-lobby .wizard-card small{color:#d6dfd7;text-shadow:0 1px 4px #000}
+.command-lobby .wizard-select{color:#e5d66e;font-size:.68rem;letter-spacing:.07em}
+.command-lobby .mode-card-large:nth-child(1):after{background-image:linear-gradient(130deg,#384f36,#18221b)}
+.command-lobby .mode-card-large:nth-child(2):after{background-image:url('/locations/blackroot-jungle.svg')}
+.command-lobby .mode-card-large:nth-child(3):after{background-image:url('/locations/river-outpost.svg')}
+.command-lobby .mode-card-large:nth-child(4):after{background-image:url('/locations/ghost-street.svg')}
+.command-lobby .zone-card:after{opacity:1;background-image:url('/locations/blackroot-jungle.svg')}
+.command-lobby .zone-card.loc-1:after{background-image:url('/locations/abandoned-school.svg')}
+.command-lobby .zone-card.loc-2:after{background-image:url('/locations/ghost-street.svg')}
+.command-lobby .zone-card.loc-3:after{background-image:url('/locations/misty-highlands.svg')}
+.command-lobby .zone-card.loc-4:after{background-image:url('/locations/sunken-camp.svg')}
+.command-lobby .zone-card.loc-5:after{background-image:url('/locations/river-outpost.svg')}
+.command-lobby .zone-card.loc-6:after{background-image:url('/locations/broken-quarry.svg')}
+.command-lobby .zone-card.loc-7:after{background-image:url('/locations/redwood-basin.svg')}
+.command-lobby .zone-card.loc-8:after{background-image:url('/locations/flooded-village.svg')}
+.command-lobby .zone-card.loc-9:after{background-image:url('/locations/ashen-forest.svg')}
+.command-lobby .zone-art{display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,5vw,4.6rem);color:#e4d58a;text-shadow:0 4px 12px #000}
+.command-lobby .operator-choice:after{background-size:contain;background-position:center bottom;background-repeat:no-repeat;opacity:.94}
+.command-lobby .operator-choice:nth-child(1):after{background-image:url('/operators/recon.png')}
+.command-lobby .operator-choice:nth-child(2):after{background-image:url('/operators/heavy.png')}
+.command-lobby .operator-choice:nth-child(3):after{background-image:url('/operators/shadow.png')}
+.command-lobby .operator-choice:before{background:linear-gradient(180deg,rgba(4,8,7,.08),rgba(4,8,7,.22) 38%,rgba(4,8,7,.98) 100%)}
+.command-lobby .coin-pill{background:linear-gradient(135deg,#17251d,#0b110e);border:1px solid #8a9a6b;box-shadow:inset 0 1px #ffffff12}
+@media(max-height:520px) and (orientation:landscape){
+ .command-lobby .lobby-title h1{font-size:clamp(1.1rem,4vh,2rem)}
+ .command-lobby .lobby-title p{font-size:.72rem;margin:.25rem 0}
+ .command-lobby .wizard-card{min-height:clamp(120px,36vh,220px)}
+ .command-lobby .wizard-card small{font-size:.62rem}
+ .command-lobby .wizard-select{font-size:.55rem}
+}
+
+
+/* V6 cinematic settings, illustrated zone cards, and tactical operator cards */
+.settings-dialog{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(180deg,rgba(5,10,11,.88),rgba(7,12,12,.96))!important;border:1px solid rgba(157,190,184,.45);box-shadow:0 22px 70px #000b}
+.settings-dialog:before{content:"";position:absolute;inset:0;z-index:-2;background:url('/settings-battlefield.webp') center 45%/cover no-repeat;opacity:.38;animation:settingsBattlefieldDrift 24s ease-in-out infinite alternate;transform:scale(1.06)}
+.settings-dialog:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(3,8,10,.44),rgba(4,8,10,.91) 38%,rgba(3,7,8,.96));backdrop-filter:saturate(.7)}
+@keyframes settingsBattlefieldDrift{0%{transform:scale(1.06) translate3d(-1%,0,0);filter:brightness(.7) blur(.2px)}100%{transform:scale(1.16) translate3d(1%,-1%,0);filter:brightness(.52) blur(1px)}}
+.settings-dialog>*{position:relative;z-index:1}
+/* Actual artwork, not emoji placeholders, fills every location selection card. */
+.command-lobby .zone-card:after{background-size:cover;background-position:center;opacity:.98;filter:saturate(.95) contrast(1.08)}
+.command-lobby .zone-card:before{background:linear-gradient(180deg,rgba(4,9,9,.08) 0%,rgba(4,8,8,.16) 28%,rgba(3,7,8,.93) 100%)}
+.command-lobby .zone-card:nth-child(1):after{background-image:url('/locations/blackroot-jungle.svg')}
+.command-lobby .zone-card:nth-child(2):after{background-image:url('/locations/abandoned-school.svg')}
+.command-lobby .zone-card:nth-child(3):after{background-image:url('/locations/ghost-street.svg')}
+.command-lobby .zone-card:nth-child(4):after{background-image:url('/locations/misty-highlands.svg')}
+.command-lobby .zone-card:nth-child(5):after{background-image:url('/locations/sunken-camp.svg')}
+.command-lobby .zone-card:nth-child(6):after{background-image:url('/locations/river-outpost.svg')}
+.command-lobby .zone-card:nth-child(7):after{background-image:url('/locations/broken-quarry.svg')}
+.command-lobby .zone-card:nth-child(8):after{background-image:url('/locations/redwood-basin.svg')}
+.command-lobby .zone-card:nth-child(9):after{background-image:url('/locations/flooded-village.svg')}
+.command-lobby .zone-card:nth-child(10):after{background-image:url('/locations/ashen-forest.svg')}
+.command-lobby .zone-card .zone-art{display:none}
+.command-lobby .zone-card{min-height:0;box-shadow:0 10px 24px #0008}
+.command-lobby .zone-card>b{font-size:clamp(10px,1.05vw,15px);text-shadow:0 2px 8px #000}
+.command-lobby .mode-card-large:after{background-size:cover;background-position:center 25%;opacity:.82}
+.command-lobby .mode-card-large:nth-child(1):after{background-image:linear-gradient(145deg,#263f37,#0b1715),url('/operators/recon.png')}
+.command-lobby .mode-card-large:nth-child(2):after{background-image:url('/operators/heavy.png')}
+.command-lobby .mode-card-large:nth-child(3):after{background-image:url('/operators/operator-06.png')}
+.command-lobby .mode-card-large:nth-child(4):after{background-image:url('/operators/shadow.png')}
+.command-lobby .mode-card-large .wizard-icon{background:#09130fbb;border-color:#d6e2c35c;box-shadow:0 4px 18px #0007}
+.command-lobby .operator-choice>img{z-index:-1;object-fit:cover;object-position:center 18%;opacity:.82;transform:scale(1.02);transition:transform .45s,filter .45s}
+.command-lobby .operator-choice:hover>img{transform:scale(1.08);filter:contrast(1.12) saturate(1.1)}
+.command-lobby .operator-choice:after{inset:20% 0 0;background:linear-gradient(180deg,rgba(4,9,10,.02),rgba(4,8,8,.25) 38%,rgba(4,8,8,.98) 100%)}
+/* Keep settings readable on short landscape phones and respect reduced-motion preference. */
+@media(prefers-reduced-motion:reduce){.settings-dialog:before,.command-lobby .operator-choice>img{animation:none;transition:none}}

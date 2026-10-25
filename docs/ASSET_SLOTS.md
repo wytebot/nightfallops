@@ -17,3 +17,7 @@ Weapon IDs: pistol, revolver, smg, assault-rifle, carbine, marksman, machine-gun
 
 ## Licensing
 Only ship sounds and art where the actual license permits the intended distribution. See `LICENSES.md`; a sound filename or attribution alone is not proof of commercial redistribution rights.
+
+## Location-card panoramas
+
+Ten original lightweight SVG scenes are bundled under `public/locations/` and referenced by `src/style.css`: `blackroot-jungle.svg`, `abandoned-school.svg`, `ghost-street.svg`, `misty-highlands.svg`, `sunken-camp.svg`, `river-outpost.svg`, `broken-quarry.svg`, `redwood-basin.svg`, `flooded-village.svg`, and `ashen-forest.svg`. They are intentionally vector artwork so the zone picker stays crisp and small on mobile.

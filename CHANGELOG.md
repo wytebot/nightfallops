@@ -142,3 +142,35 @@
 - Added on-demand per-weapon fire sample loading with shared/synth fallback, and connected supplied explosion/pain samples to shared SFX actions.
 - Added a PWA manifest, master SVG icon, basic service worker, install metadata, and implementation/asset/install audit documents.
 - Verification: `npm run test:catalog` and `npm run test:assets` pass. `npm install` timed out and `npm run build` fails in this environment because installed dependencies/types are unavailable; no gameplay browser test or Android build was run.
+
+
+## 2026-10-25 — Battlefield controls, ammo economy, and location artwork
+
+- Added Phaser-native multitouch dual-stick input: the left-side drag aims and fires; the right-side drag moves. Both sticks are rendered in screen space and support simultaneous touch. Existing tactical action buttons remain available.
+- Removed the infinite-ammunition HUD and player ammunition behavior. Weapons now have weapon-specific magazine sizes, finite reserve ammunition, reload timing, and a visible magazine/reserve counter. The default pistol is no longer an endless-ammo weapon.
+- Added weapon-specific projectile colors, radii, and rail/experimental weapon streak effects; enemy takedowns now use a short fade/fall animation and trigger the configured pain/death sound.
+- Added ten original lightweight SVG battlefield panoramas and wired them to the corresponding insertion-zone cards: Blackroot Jungle, Abandoned School, Ghost Street, Misty Highlands, Sunken Camp, River Outpost, Broken Quarry, Redwood Basin, Flooded Village, and Ashen Forest.
+- Kept wallet, coin spending, checkout, purchase-provider, server economy, Firebase rules, native auth, and Google service configuration untouched. Existing coin and verified-payment purchase paths remain in place.
+- Validation: `node scripts/check-catalog.mjs`, `node scripts/validate-assets.mjs`, and `node --check public/sw.js` pass. Full dependency install/build and live browser/device playtest remain unverified because npm installation timed out in this environment.
+
+
+## Field-overhaul visual pass
+- Added illustrated, location-specific backgrounds to mission, zone, and operator cards using bundled artwork.
+- Added procedural battlefield dressing: supply crates, sandbag emplacements, stacked stone cover, field tents, and taller perimeter trees.
+- Added lightweight stride animation for player and combat units, visible carried weapons for enemy units, and short bullet tracers to make automatic fire read as a burst rather than isolated dots.
+- Preserved economy, billing, authentication, and Firebase security files.
+- Validation: asset and catalog tests pass. Full production build and device gameplay remain unverified in this environment.
+
+## Field Overhaul v4 — combat polish pass
+- Added brief weapon kick/recovery animation to the held weapon sprite on shots.
+- Added ejected brass for automatic rifles, SMGs and machine guns, with short-lived pooled-scene effects.
+- Added stride-linked weapon bob and stronger foot/leg cadence while units move.
+- Added soft collision resolution around battlefield cover pockets so units are pushed around logs, rocks and fern cover rather than passing straight through their footprint.
+- Preserved the existing weapon catalogue, ammo/reload logic, server economy and verified billing modules.
+
+### Verification status
+- `npm run test:catalog`: passed.
+- `npm run test:assets`: passed.
+- `node --check scripts/validate-assets.mjs`: passed.
+- `node --check public/sw.js`: passed.
+- Full TypeScript/Vite build remains unverified: dependency installation timed out in this environment.

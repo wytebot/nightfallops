@@ -120,3 +120,13 @@ Use a physical Android phone in landscape and a laptop/desktop browser. Mark eac
 - [ ] Store shelf shows chart art for 11 weapons, scrolls horizontally on touch and mouse; popup shows large art with Cancel.
 - [ ] Soldiers stay upright while aiming; the held weapon follows the aim and flips when aiming left; enemies look reddish.
 - [ ] Buy Revolver/Carbine/AMR/Minigun with coins against the deployed server function (new prices must be deployed).
+
+## Field overhaul verification — 2026-10-25
+
+- [x] Catalog verification: 17 weapon entries, weapon balance ordering, server coin-price parity, upgrade curves and checkout isolation (`npm run test:catalog`).
+- [x] Asset verification: operator art, weapon art, weapon audio slots, shared combat sounds and server weapon-price parity (`npm run test:assets`).
+- [x] Ten custom zone SVG files parse as valid XML.
+- [x] Service worker and asset validation scripts pass Node syntax checks.
+- [x] Verified unchanged protected paths against the preceding project archive: `functions/`, `firestore.rules`, `src/serverEconomy.ts`, `src/purchaseProvider.ts`, `src/nativeAuth.ts`, `google-services.json`, and `capacitor.config.ts`.
+- [ ] Production build / full TypeScript typecheck: blocked because `npm install --no-audit --no-fund` timed out and dependencies were not installed in this environment.
+- [ ] Browser playtest, two-finger phone test, reload edge cases, and Android build/device test remain required before publishing.
