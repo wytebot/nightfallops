@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Wallet and payment documents are server-owned; Admin SDK bypasses these rules.
+    match /nightfallWallets/{uid} { allow read, write: if false; }
+    match /nightfallPayments/{id} { allow read, write: if false; }
+    match /nightfallRequests/{id} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,114 @@
+# Nightfall Ops — Upgrade Changelog
+
+## Phase 1 — Bug fixes and native foundations
+- Replaced the duplicate Phaser touch-movement/shoot handlers with one React pointer-event joystick, pointer capture, a moving knob, and up/cancel/lost-capture resets. The shoot-held state is no longer overwritten by a React effect.
+- Added a real pause flow with Resume, Settings, Restart Mission, and Quit to Base; the game canvas stays mounted while pause/settings overlays are shown. Escape and Android Back open/preserve the pause flow.
+- Removed touchstart handling from Bomb; the action uses `onPointerDown`.
+- Initialized enemy patrol/search timestamps and last-known-player coordinates; added investigate/search movement and alert bubbles.
+- Bombs cannot damage the commander until the objective is complete. Coin upgrades now check caps and owned skins switch without charging again; removed the unfinished Invulnerability purchase row.
+- Hydrated audio, haptics, and control preferences from the IndexedDB/localStorage profile without wiping old saves.
+- Added reusable Phaser bullet groups/pools and dead/out-of-bounds bullet pruning. Shift is sprint; C/button is stealth. Movement normalization uses `Math.max(1, magnitude)`.
+- Replaced the visual-only night glow with a RenderTexture darkness layer and flashlight-cone cutout plus a fixed vignette. Phaser's duplicate text HUD is hidden/removed in favor of the React HUD.
+- Added a shared mission reward function used by game settlement and app failure settlement.
+- Added distinct Survival waves, Rescue captive/escort-to-exit, and Sabotage plant/defend objectives.
+- Added Capacitor App and Haptics dependencies, removed `bundledWebRuntime`, and added an Android configuration script for `sensorLandscape` and immersive sticky fullscreen.
+
+## Phase 2 — Game feel, camera, and controls
+- Added lerped camera zoom, aim look-ahead, aim-cone assist, hit/bomb shake, and a short physics hit-stop.
+- Added Assault/Shotgun fire rates and spread, muzzle flash, shell casings, tracers, sparks, and blood-free hit flashes.
+- Expanded enemy AI with patrol, alert, investigate/search, chase, flank, and cover-seeking states; added faint vision wedges and alert indicators.
+- Added basic gamepad movement/fire support and R-to-revive for downed squadmates; squad members use formation following and seek cover when hurt.
+
+## Phase 3 — Graphics and interface
+- Baked repeated tree, log, rock, and fern art into a small local texture set; reduced per-tree tweens and repeated Graphics objects.
+- Added location-tinted parallax fog, low-cost rain/ash/water particles, water ripples, and local procedural weather.
+- Added a React-only tactical radar, enemy pings, objective compass, animated health damage trail, optional FPS estimate, animated result stars, and store hover/portrait treatments.
+- Added settings for volume buses, haptics, aim assist, camera shake, reduce motion, FPS display, language preference, drag-to-position action controls, and confirmed local reset.
+- Removed Google Fonts runtime imports and bundled local font files under `public/fonts`.
+
+## Phase 4 — Procedural offline audio
+- Added a master gain, music/SFX buses, dynamics compressor/limiter, cached procedural noise buffers, and per-location ambience layers.
+- Added ambience intensity changes during combat, location-aware wind/cricket/frog/river/thunder-style layers, and procedural assault/shotgun/reload/hit/explosion/heartbeat/alert/coin/level-up sounds.
+
+## Phase 5 — Cloud-save safety
+- Debounced and serialized cloud writes; coalesces queued profiles, keeps one write in flight, and caches the Drive file ID before subsequent writes.
+- Background sync never opens a sign-in prompt after authorization expires; reconnect is initiated by an explicit account-button tap.
+- Profile conflicts now choose the newest timestamp per field instead of `Math.max`-merging coin balances. Append-only histories are unioned, and skin ownership is unioned.
+- Added a native account-provider interface seam. Paid entitlements remain server-owned; the client purchase-provider is UI-only and cannot grant paid inventory.
+
+## Verification status
+- TypeScript/TSX syntax transpilation: passed for all source modules.
+- Android configuration script syntax check: passed.
+- Reward formula smoke test and archive integrity: see final delivery notes.
+- `npm run build` was attempted after each phase but could not complete because the environment could not resolve `registry.npmjs.org` (`EAI_AGAIN`); dependencies are absent, so a real TypeScript semantic build, Vite production build, and Android build remain unverified.
+
+## Auto-shoot upgrade (Phase 2 follow-up)
+- Added free AUTO toggle for touch and the `T` key, with saved default/last state and a React HUD AUTO ON/OFF chip.
+- Added Short / Medium / Long target range, adjustable aim-assist strength, 100 ms target scans, line-of-fire cover checks, target scoring and 25% / 400 ms target stickiness.
+- Auto aim leads moving targets at 740 px/s, rotates smoothly, respects the 6-degree firing gate, weapon cadence/spread/damage and boss shield immunity.
+- Manual mouse movement and FIRE/Space input temporarily override auto aim; sprint suspends auto-fire; stealth breaks when firing.
+- Added target lock reticle, faint aim tracer, green animated mobile lock ring, haptic tick and click feedback. No billing or Flutterwave code changed.
+
+## Catalog, upgrades and armory extension (requested Phases 1–6)
+
+### Phase 1 — Catalog and pricing
+- Added `src/catalog.ts` as the single source for coin packs, cash squad offers, coin supplies, skins, geometric upgrade costs, weapon rarity, USD/NGN prices and combat stats. `NGN_PER_USD` is defined once at 1,200.
+- Added one cash-price formatter/component; coin packs show coins per dollar and the 50,000 pack has a BEST VALUE ribbon. All cash prices show USD and NGN.
+- Replaced the purchase stub with the required `PurchaseProvider.startCheckout(productId)` / `getEntitlements()` interface. Its mock only returns “checkout not connected”; it contains no payment SDK, keys, webhook, billing mutation or client-side cash grant.
+- Cash coin packs and squads are display/checkout stubs. Coin-only supplies, recruitment, skins, weapons and upgrades spend local coins, with owned items switching/equipping without another charge.
+
+### Phase 2 — Operator upgrades
+- Added SOLDIER / PARTNER / ARMY tabs, stat pips, current-to-next previews, level caps, cost curves, insufficient-coin reasons and total power rating.
+- Added hold-to-repeat upgrades with a delay, per-repeat affordability checks, coin counter pulse/particles, haptics and ding feedback.
+- Persisted per-track levels and applied health, damage, fire rate, movement speed, stealth signature and squad accuracy multipliers in combat. Existing saves are migrated; legacy `weaponLevel` maps to the assault-rifle unlock when nonzero.
+
+### Phase 3 — Weapon store
+- Added the horizontal snap shelf for Pistol, SMG, Assault Rifle, Shotgun, Marksman, Machine Gun, Plasma Rifle, Rail Cannon and Aether Reaver, with rarity art treatments, owned/equipped badges, wheel-to-horizontal, mouse drag, arrows and page dots.
+- Added a dismissible detail modal with catalog-driven DPS, stat bars, spread/pellets/splash/crit/recoil details, coin/cash price display, comparison direction, Buy/Equip and Cancel.
+- The scene reads weapon stats directly from the catalog. Damage, rate, range, spread/accuracy, pellet count, pierce, splash, crit and recoil all affect projectile combat. Added `npm run test:catalog` to check price parity, DPS ordering, upgrade cost growth and shared catalog/scene values.
+- Server-only cash entitlements are read from the provider boundary and never written into the locally owned-weapon list by a checkout click.
+
+### Phase 4 — Endless difficulty and AI
+- Expanded the map to 3,800 × 3,200 and added deterministic level-seeded landmark patches while retaining connected, traversable terrain.
+- Enemy health, damage, accuracy and reaction cadence scale with level. Spawn streaming maintains a maximum of 70 active hostiles including the boss; squad size gains a level-tier reinforcement allowance.
+- Improved alert propagation/call-for-help, cover retreat at low health, flashlight/daylight visibility and line-of-sight checks for enemy fire and player projectiles. Enemy patrol/search timestamps are initialized on creation.
+
+### Phase 5 — Transitions and progression
+- Added a shared fade-to-black/reveal curtain with transition sound for deployment, result, death and return-to-base paths; Phaser fades into the mission camera.
+- Added the ordered next-level checklist (result, coins, upgrade suggestion, zone, deploy) with animated completed/current states and tap-to-skip.
+- Results animate elimination and coin counts and show a star rating.
+
+### Phase 6 — Consistency and QA
+- Reused the app’s existing visual tokens, locally bundled font stack, button/popup frame, modal backdrop and sound feedback.
+- Added the catalog regression script and expanded the manual QA list for price parity, coin math, upgrade caps, modal cancel, weapon-stat parity, levels 50/100, transitions, landscape and offline play.
+- Billing remains a disconnected provider stub; no Flutterwave v4 logic was added or changed.
+
+## v9 — Combat response, explosives and flow hardening (2026-10-25)
+- Expanded the armory from 9 to 13 weapons: Hand Grenade, Grenade Launcher, RPG-7 and Flamethrower. Every weapon's projectile type and combat stats are catalog-defined, reflected in the shelf and detail modal, and consumed by the game scene.
+- Added impact/fuse blast handling for grenade and rocket projectiles, radial damage falloff, flame splash, unique launcher/flame procedural audio, distinct projectile tint/scale, and detonation on range expiry for rockets/grenades.
+- Improved frame-time resilience by clamping very large `dt` after app resume, moving joystick input directly into the Phaser scene rather than triggering React state updates for every pointer movement, avoiding duplicate pooled bullet references, checking projectile distance before expensive line-of-sight work, and removing a global physics pause / timer race from each enemy kill.
+- Hardened coin-spend flows for weapon, recruitment, supplies and skins to read the latest local profile before deductions and prevent duplicate owned-item charges. Cash checkout remains a disconnected mock and does not grant coins, squad members or weapons.
+- Added regression assertions for the new weapon IDs/projectile types, blast wiring, pooled-bullet uniqueness and purchase-provider isolation.
+
+## v9 verification boundary
+- `npm run test:catalog`: passed for all 13 weapons, DPS ordering, projectile types, catalog-to-scene wiring, upgrade cost curves, requested prices and checkout isolation.
+- Global TypeScript `transpileModule` syntax checks: passed for App, game, catalog, audio, purchase provider, storage, cloud and reward modules; both Node script syntax checks passed.
+- Full `npm run build` was attempted but remains blocked by missing React/Phaser/Capacitor/Lucide dependencies; registry DNS was unavailable in this environment. No claim of a successful Vite or Android build, on-device performance test, or live checkout test is made.
+
+
+## v11 — Native Google account + Firestore profile
+- Added Capacitor Firebase Authentication Google sign-in and switched economy authorization to Firebase ID tokens verified by Firebase Admin.
+- Added server-owned minimal Firestore profile persistence and automatic initial wallet creation.
+- Added Capacitor Browser hosted checkout on Android and wallet/entitlement refresh when the app resumes.
+- Aligned Capacitor app ID with the supplied Firebase Android package and added Google Services Gradle setup to the Android configuration script.
+- Important: the uploaded `google-services.json` currently has no OAuth client entries. Add SHA-1 fingerprints and download the refreshed config before expecting native Google sign-in to succeed.
+- Flutterwave checkout currently uses Standard `/v3` API endpoints; production Flutterwave API v4 compliance is not claimed.
+
+## v12 — Standalone diagnostics and payment credential hardening
+- Added a React error boundary so render-time failures show a recoverable screen instead of a blank UI, with one-tap diagnostic JSON export and reload.
+- Added persistent, bounded client diagnostics for unhandled JS errors/rejections, network changes, lifecycle transitions, sign-in failures and wallet refresh failures. Diagnostic text redacts common token/secret patterns and does not include payment secrets.
+- Added Settings → Standalone APK / AAB diagnostics: runtime/native status, network, local storage, Firebase session, canvas state and HTTPS economy health check.
+- Added `GET /health` to the Firebase economy function. It reports service status and whether Flutterwave server secrets are present, never their values.
+- Added server-secret slots for `FLW_CLIENT_ID`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`, and `FLW_WEBHOOK_HASH`; webhook hash comparison now uses a length check and constant-time comparison.
+- Added `npm run android:diagnose` to inspect generated Capacitor/Android artifacts, landscape config, Firebase package alignment, economy endpoint presence and missing Google OAuth client entries.
+- No Flutterwave credentials are embedded in Vite variables, source, APK, AAB, or repository files.

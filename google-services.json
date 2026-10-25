@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "38894961749",
+    "project_id": "nightfall-b49be",
+    "storage_bucket": "nightfall-b49be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38894961749:android:9ff9ddba0608b813a940dc",
+        "android_client_info": {
+          "package_name": "app.nightfallops.vercel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiN3Vr-8lfJfdnGxX4gGizp5tAMYOQ3e0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
