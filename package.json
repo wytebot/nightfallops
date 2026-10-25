@@ -10,12 +10,14 @@
     "android:configure": "node scripts/configure-android.mjs",
     "android:sync": "npx cap sync android && node scripts/configure-android.mjs",
     "test:catalog": "node scripts/check-catalog.mjs",
+    "test:shot": "node scripts/test-shot-cycle.mjs",
     "android:diagnose": "node scripts/diagnose-android.mjs",
     "test:diagnostics": "node scripts/diagnose-android.mjs",
     "test:assets": "node scripts/validate-assets.mjs",
     "test:economy": "node scripts/test-economy-contract.mjs",
     "test:ai-sim": "node scripts/headless-ai-simulation.mjs",
-    "test:gameplay-rules": "node scripts/test-gameplay-rules.mjs"
+    "test:gameplay-rules": "node scripts/test-gameplay-rules.mjs",
+    "test:touch-controls": "node scripts/test-touch-controls.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.0",

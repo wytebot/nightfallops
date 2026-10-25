@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const game=fs.readFileSync(new URL('../src/game.ts',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../src/App.tsx',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../src/style.css',import.meta.url),'utf8');
+assert.match(game,/p\.x<this\.scale\.width\*\.5&&this\.touchMovePointer<0/,'left half must control movement');
+assert.match(game,/p\.x>=this\.scale\.width\*\.5&&this\.touchAimPointer<0/,'right half must control aim');
+assert.match(game,/this\.shootHeld=true/,'touch aim must hold fire');
+assert.match(game,/touchControls\.strokeCircle\(o\.x,o\.y,13\)/,'aim must render a distinct reticle, not a second joystick');
+assert.match(game,/this\.autoRange=this\.cfg\.autoShootRange==='Short'\?380:this\.cfg\.autoShootRange==='Long'\?900:680/,'auto aim ranges must be strengthened');
+assert.match(game,/this\.scale\.width<700\?.*:.88/,'mobile camera must widen battlefield view');
+assert.match(app,/LEFT DRAG MOVE · TOUCH RIGHT TO AIM \+ FIRE/,'on-screen hint must match controls');
+assert.match(css,/--control-scale:\.88/,'on-screen controls must be moderately smaller');
+console.log('Touch control contract tests passed.');

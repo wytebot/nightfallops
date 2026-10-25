@@ -17,3 +17,10 @@
 ## Not verified
 - `npm run build` — BLOCKED because dependencies are absent (`react`, `phaser`, Capacitor packages, and type declarations could not be resolved). No compiled web bundle or APK was produced.
 - No physical-device playtest was performed; timing, visual fade, touch behavior, and native lifecycle still need device QA.
+
+
+## Touch controls and camera follow-up
+- `npm run test:touch-controls`: PASS. Confirms left movement zone, right aim/fire zone, distinct reticle, wider camera target, increased auto-aim range and reduced UI scale.
+- Existing catalog, assets, economy, headless AI, and gameplay-rules scripts: PASS after these edits.
+- Phaser runtime touch behavior and physical-device testing: NOT VERIFIED.
+- TypeScript/Vite production build and Capacitor APK: NOT VERIFIED.

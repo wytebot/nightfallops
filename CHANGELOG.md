@@ -234,3 +234,14 @@ See MOVEMENT_VIEW_V16.md: faster movement, alternating-leg walk cycle and firing
 - Corrected weather particle storage to accept both Phaser `Arc` (circles) and `Rectangle` (rain/drizzle) objects, matching the actual objects created by the weather renderer.
 - Removed the impossible `projectileKind === 'energy'` comparison; the catalog's inferred projectile union does not include `energy`, and energy-style weapons already use the `bullet` projectile type with weapon-specific visuals.
 - Verification: catalog/assets/economy/AI/gameplay-rule scripts passed. Full `tsc -b` remains unverified because dependencies could not be installed in this environment.
+
+
+## v17 — Touch controls, camera and aim polish (2026-10-25)
+- Swapped touch zones: left half controls movement; right half controls facing/aim and fires while held.
+- Replaced the second joystick-style aim indicator with a distinct crosshair, direction tick and subtle line from player to aim point.
+- Widened the default camera view on phones and tablets to show more of the battlefield; focus zoom remains available.
+- Strengthened auto-targeting by extending Short/Medium/Long acquisition ranges to 380/680/900 world units and improving close-target weighting.
+- Reduced utility button and radar sizing moderately, respecting safe-area bottom inset and reduced-motion preference.
+- Added `test:touch-controls` source contract test.
+- Preserved Flutterwave checkout and existing game economy behavior.
+- Build status: source contract and existing script checks pass; TypeScript/Vite and native APK builds not run in this environment.

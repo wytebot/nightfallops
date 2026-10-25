@@ -100,5 +100,12 @@ for (const file of ['public/ui/life-heart.png','public/ui/magic-potion.png','pub
 }
 if (!(await exists('public/ui/operator-upgrade.webp'))) problems.push('public/ui/operator-upgrade.webp: missing');
 for (const ref of ['ui/life-heart.png','ui/magic-potion.png','ui/coin-stack.png']) if (!appSource.includes(ref)) problems.push(`App.tsx does not use ${ref}`);
+// ---- v18 battlefield props: transparent PNGs referenced by the war-zone generator
+for (const n of ['house','car','tank','sandbags','wire','crate','crater','log']) {
+  const file = `public/props/${n}.png`;
+  if (!(await exists(file))) { problems.push(`${file}: missing`); continue; }
+  const img = decodePng(await read(file));
+  if ([0, (img.w - 1) * 4, (img.h - 1) * img.w * 4, ((img.h - 1) * img.w + img.w - 1) * 4].some(i => img.px[i + 3] > 8)) problems.push(`${file}: corners are not transparent`);
+}
 if (problems.length) { console.error('Asset validation FAILED:\n - ' + problems.join('\n - ')); process.exit(1); }
 console.log(`Asset validation passed: ${referenced.size} characters, weapon art, audio files and server weapon prices are consistent.`);
