@@ -5,6 +5,16 @@ const STORE = 'profiles';
 const KEY = 'local-profile-v2';
 const LEGACY_LOCAL_KEYS = ['nightfall-ops-save-v1', 'nightfall-ops-save'];
 
+const HISTORY_LIMITS: Record<string, number> = { missionHistory: 120, activityHistory: 160, purchaseHistory: 120 };
+function compactProfile<T>(value: T): T {
+  if (!value || typeof value !== 'object') return value;
+  const profile: any = { ...(value as any) };
+  for (const [field, limit] of Object.entries(HISTORY_LIMITS)) {
+    if (Array.isArray(profile[field])) profile[field] = profile[field].slice(-limit);
+  }
+  if (profile.inventory && Array.isArray(profile.inventory.ownedSkins)) profile.inventory.ownedSkins = Array.from(new Set(profile.inventory.ownedSkins)).slice(-80);
+  return profile as T;
+}
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (!('indexedDB' in window)) return reject(new Error('IndexedDB unavailable'));
@@ -16,7 +26,7 @@ function openDb(): Promise<IDBDatabase> {
 }
 function readCompatibilitySnapshot<T>(fallback: T): T | undefined {
   for (const key of LEGACY_LOCAL_KEYS) {
-    try { const raw = localStorage.getItem(key); if (raw) return { ...fallback as object, ...JSON.parse(raw) } as T; } catch { /* try next legacy key */ }
+    try { const raw = localStorage.getItem(key); if (raw) return compactProfile({ ...fallback as object, ...JSON.parse(raw) } as T); } catch { /* try next legacy key */ }
   }
   return undefined;
 }
@@ -55,21 +65,22 @@ export async function loadProfile<T>(fallback: T): Promise<T> {
       req.onsuccess = () => resolve(req.result as T | undefined); req.onerror = () => reject(req.error);
     });
     db.close();
-    if (value && compatibility) return mergeLegacyProfile(value, compatibility);
-    if (value) return value;
+    if (value && compatibility) return compactProfile(mergeLegacyProfile(value, compatibility));
+    if (value) return compactProfile(value);
   } catch { /* localStorage migration fallback */ }
-  return compatibility ?? fallback;
+  return compactProfile(compatibility ?? fallback);
 }
 export async function saveProfile<T>(value: T): Promise<void> {
+  const safeValue = compactProfile(value);
   try {
     const db = await openDb();
     await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE, 'readwrite'); tx.objectStore(STORE).put(value, KEY);
+      const tx = db.transaction(STORE, 'readwrite'); tx.objectStore(STORE).put(safeValue, KEY);
       tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
     });
     db.close();
     // Keep a compatibility snapshot for recovery; IndexedDB remains primary.
-    try { localStorage.setItem('nightfall-ops-save-v1', JSON.stringify(value)); } catch { /* quota-safe */ }
-  } catch { try { localStorage.setItem('nightfall-ops-save-v1', JSON.stringify(value)); } catch { /* no storage available */ } }
+    try { localStorage.setItem('nightfall-ops-save-v1', JSON.stringify(safeValue)); } catch { /* quota-safe */ }
+  } catch { try { localStorage.setItem('nightfall-ops-save-v1', JSON.stringify(safeValue)); } catch { try { localStorage.removeItem('nightfall-ops-save'); localStorage.removeItem('nightfall-ops-save-v1'); localStorage.setItem('nightfall-ops-save-v1', JSON.stringify(safeValue)); } catch { /* browser storage unavailable; IndexedDB is preferred when available */ } } }
 }
 export type CloudCheckpoint = { level:number; mode:GameMode; location:string; timeOfDay:'Night'|'Day'; savedAt:number };

@@ -92,5 +92,13 @@ const server = (await read('functions/index.js')).toString();
 for (const m of catalogSource.matchAll(/\{id:'([a-z-]+)',(?:image:'[^']*',)?name:'[^']*',tier:'[A-Za-z]+',description:'[^']*',coinPrice:(\d+)/g)) {
   if (!['hand-grenade'].includes(m[1]) && !new RegExp(`['"]?${m[1]}['"]?:\\{coin:${m[2]}[,}]`).test(server)) problems.push(`server weapon table is missing ${m[1]} at ${m[2]} coins`);
 }
+// ---- v15 UI art: life heart, magic potion, coin stack and the upgrade-screen operator must ship and be referenced
+for (const file of ['public/ui/life-heart.png','public/ui/magic-potion.png','public/ui/coin-stack.png']) {
+  if (!(await exists(file))) { problems.push(`${file}: missing`); continue; }
+  const img = decodePng(await read(file));
+  if ([0, (img.w - 1) * 4, (img.h - 1) * img.w * 4, ((img.h - 1) * img.w + img.w - 1) * 4].some(i => img.px[i + 3] > 8)) problems.push(`${file}: corners are not transparent`);
+}
+if (!(await exists('public/ui/operator-upgrade.webp'))) problems.push('public/ui/operator-upgrade.webp: missing');
+for (const ref of ['ui/life-heart.png','ui/magic-potion.png','ui/coin-stack.png']) if (!appSource.includes(ref)) problems.push(`App.tsx does not use ${ref}`);
 if (problems.length) { console.error('Asset validation FAILED:\n - ' + problems.join('\n - ')); process.exit(1); }
 console.log(`Asset validation passed: ${referenced.size} characters, weapon art, audio files and server weapon prices are consistent.`);

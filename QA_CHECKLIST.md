@@ -130,3 +130,44 @@ Use a physical Android phone in landscape and a laptop/desktop browser. Mark eac
 - [x] Verified unchanged protected paths against the preceding project archive: `functions/`, `firestore.rules`, `src/serverEconomy.ts`, `src/purchaseProvider.ts`, `src/nativeAuth.ts`, `google-services.json`, and `capacitor.config.ts`.
 - [ ] Production build / full TypeScript typecheck: blocked because `npm install --no-audit --no-fund` timed out and dependencies were not installed in this environment.
 - [ ] Browser playtest, two-finger phone test, reload edge cases, and Android build/device test remain required before publishing.
+
+## v17 follow-up: standalone Capacitor APK checks
+
+1. Confirm `index.html` points to the relative `./src/main.tsx` entry and that `vite build` emits a working `dist/index.html`.
+2. Confirm native Capacitor does not register `public/sw.js`; web/PWA builds may still register it.
+3. Install the debug APK, launch offline, and verify the app opens without a blank screen. Test again after clearing app data.
+4. During gameplay, press Android Back: it should pause to the pause screen. Background the app, wait, and foreground it: gameplay should resume only if the app was still on the game screen.
+5. Sign in and check wallet sync. Background/foreground after a purchase and confirm wallet/entitlements reconcile from the server.
+6. Double-tap coin purchase buttons; verify only one in-flight request is made. Simulate timeout then retry; verify the same idempotency key is reused.
+7. Test purchase paths with insufficient balance, offline, replayed request, modified client metadata, and already-owned squad tiers against the deployed Functions emulator/staging project.
+8. Test all target sizes and cutouts on physical devices; this was not performed in this environment.
+
+## Billing scope warning
+
+The repository version audited here uses Flutterwave `/v3/payments` and `/v3/transactions/.../verify` endpoints. The billing code was preserved unchanged by the v17 follow-up; do not assume Flutterwave v4 compatibility without confirming the integration contract and running live test-mode verification.
+
+## Reproducible build commands (after dependencies and Android SDK are available)
+
+```bash
+npm ci
+npm run test:catalog
+npm run test:assets
+npm run test:economy
+npm run test:ai-sim
+npm run build
+npx cap add android   # only if android/ does not exist
+npx cap sync android
+npm run android:configure
+cd android
+./gradlew assembleDebug
+./gradlew bundleRelease
+```
+
+For a bundletool device install test, download a current `bundletool-all-*.jar` from the official Android bundletool releases, then:
+
+```bash
+java -jar bundletool-all.jar build-apks --bundle=app/build/outputs/bundle/release/app-release.aab --output=/tmp/nightfall.apks --mode=universal
+java -jar bundletool-all.jar install-apks --apks=/tmp/nightfall.apks
+```
+
+`npm ci` is currently blocked because this ZIP has no lockfile; generate and review `package-lock.json` with a working npm registry before using the commands above. Release bundle generation also requires a configured signing setup.

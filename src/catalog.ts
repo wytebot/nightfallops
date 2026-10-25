@@ -10,9 +10,9 @@ export const coinPacks: Array<CatalogItem & CashPrice & {coins:number}> = [
  {id:'coins-50000',name:'Command Vault',coins:50000,usdPrice:6.99,ngnPrice:8400,tier:'Epic',description:'50,000 coins · 7,153 coins per dollar'}
 ];
 export const squads: Array<CatalogItem & CashPrice & {count:number}> = [
- {id:'partner',name:'Partner ×1',count:1,usdPrice:.99,ngnPrice:1200,tier:'Common',description:'One tactical partner'},
- {id:'army-10',name:'Strike Squad ×10',count:10,usdPrice:4.99,ngnPrice:6000,tier:'Rare',description:'Ten additional soldiers'},
- {id:'army-20',name:'Battalion ×20',count:20,usdPrice:8.99,ngnPrice:10800,tier:'Epic',description:'Twenty additional soldiers'}
+ {id:'partner',name:'Partner ×1',count:1,coinPrice:1500,usdPrice:.99,ngnPrice:1200,tier:'Common',description:'One tactical partner'},
+ {id:'army-10',name:'Strike Squad ×10',count:10,coinPrice:12000,usdPrice:4.99,ngnPrice:6000,tier:'Rare',description:'Ten additional soldiers'},
+ {id:'army-20',name:'Battalion ×20',count:20,coinPrice:22000,usdPrice:8.99,ngnPrice:10800,tier:'Epic',description:'Twenty additional soldiers'}
 ];
 export type ProjectileKind = 'bullet'|'rocket'|'grenade'|'flame';
 export type WeaponStats = {damage:number; fireRate:number; range:number; accuracy:number; spread:number; pellets:number; pierce:number; splash:number; crit:number; recoil:number; speed:number; projectile?:ProjectileKind};
@@ -76,6 +76,7 @@ export const supplies: Array<CatalogItem & {amount:number;kind:'life'|'magic';ma
  {id:'life-4',name:'Life Pack ×4',coinPrice:300,tier:'Rare',description:'Four reserve lives',amount:4,kind:'life'},
  {id:'life-10',name:'Life Pack ×10',coinPrice:600,tier:'Epic',description:'Ten reserve lives',amount:10,kind:'life'},
  {id:'life-20',name:'Life Pack ×20',coinPrice:1000,tier:'Legendary',description:'Twenty reserve lives',amount:20,kind:'life'},
+ {id:'magic-1',name:'Magic Charge ×1',coinPrice:70,tier:'Common',description:'One 5-second invisibility and invulnerability charge',amount:1,kind:'magic'},
  {id:'magic-2',name:'Magic Pack ×2',coinPrice:120,tier:'Uncommon',description:'Two magic charges',amount:2,kind:'magic'},
  {id:'magic-4',name:'Magic Pack ×4',coinPrice:240,tier:'Rare',description:'Four magic charges',amount:4,kind:'magic'},
  {id:'magic-10',name:'Magic Pack ×10',coinPrice:500,tier:'Epic',description:'Ten magic charges',amount:10,kind:'magic'},

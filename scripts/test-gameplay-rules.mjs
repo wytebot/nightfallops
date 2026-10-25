@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const reward=fs.readFileSync(new URL('../src/reward.ts',import.meta.url),'utf8');
+const game=fs.readFileSync(new URL('../src/game.ts',import.meta.url),'utf8');
+const app=fs.readFileSync(new URL('../src/App.tsx',import.meta.url),'utf8');
+const catalog=fs.readFileSync(new URL('../src/catalog.ts',import.meta.url),'utf8');
+assert.match(reward,/if\s*\(completed\)\s*return\s*300/,'completed levels must award exactly 300 coins');
+assert.match(game,/this\.missionDuration=Number\.POSITIVE_INFINITY/,'levels must have no time limit');
+assert.doesNotMatch(game,/MISSION FAILED • TIME EXPIRED/,'timer must not fail a level');
+assert.match(game,/this\.invincibleUntil=this\.time\.now\+5000/,'magic must last exactly five seconds');
+assert.match(game,/this\.player\.setAlpha\(\.38\)/,'magic must visually cloak the player');
+assert.match(game,/this\.time\.now>=this\.invincibleUntil/,'enemies must not detect player during magic');
+assert.match(app,/magicStarterGranted/,'starter magic migration must be tracked');
+assert.ok(app.includes('grantStarterMagic?3:0'),'legacy saves must receive starter magic only once');
+assert.match(catalog,/id:'magic-1'.*coinPrice:70/s,'additional magic must be purchasable with coins');
+console.log('Gameplay rule checks passed: one-time starter 3 magic, 5-second invisibility/invulnerability, coin refill, no level timer, fixed 300-coin completion reward.');

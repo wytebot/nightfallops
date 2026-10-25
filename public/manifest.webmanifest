@@ -1,7 +1,7 @@
 {
   "name": "Nightfall Ops",
   "short_name": "Nightfall Ops",
-  "description": "Offline-first tactical jungle survival shooter.",
+  "description": "Offline-first tactical shooter with automatic landscape orientation on supported installs.",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

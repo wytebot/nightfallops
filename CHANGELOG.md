@@ -1,3 +1,6 @@
+## v15 - Player Upgrade screen, life/magic/coin art
+- See UPGRADE_UI_V15.md.
+
 # Nightfall Ops — Upgrade Changelog
 
 ## Phase 1 — Bug fixes and native foundations
@@ -174,3 +177,55 @@
 - `node --check scripts/validate-assets.mjs`: passed.
 - `node --check public/sw.js`: passed.
 - Full TypeScript/Vite build remains unverified: dependency installation timed out in this environment.
+
+## v16
+See MOVEMENT_VIEW_V16.md: faster movement, alternating-leg walk cycle and firing/reload poses, muzzle flash, ground detail + fog per location, redrawn location art, performance fixes.
+
+
+## v17 — Economy audit and transactional ledger (2026-10-25)
+- Added `AUDIT_V16.md`, a source-based audit of the six requested workstreams and the key release blockers found.
+- Added `WORKSTREAM_DESIGN_NOTES_V17.md` documenting architecture decisions, trade-offs and incomplete work.
+- Successful `/spend` coin transactions now write a server-side ledger row (user, request ID, action, item, price, balance before/after, server timestamp) atomically with the wallet and idempotency response.
+- This is a partial hardening release, not a claim that Play Billing, reconciliation, army coin purchases, AI, graphics, UI or Android release verification are complete.
+
+## v17 follow-up hardening (2026-10-25)
+
+### Workstream 1 — Economy safety
+- Added server-priced coin purchase support for Partner ×1 (1,500), Strike Squad ×10 (12,000), and Battalion ×20 (22,000), with matching client catalog values and a parity check.
+- Server upgrade pricing now derives army size from the stored wallet rather than caller-supplied metadata.
+- Purchase request IDs persist in local storage across a timeout/retry and identical in-flight purchases share one promise. Server request IDs are hashed before use as Firestore document IDs.
+- Coin spends, idempotency response and ledger entry remain in one Firestore transaction. Unknown catalog items and invalid balances/prices now fail closed.
+
+### Workstream 2 — Billing
+- Existing hosted checkout and Flutterwave webhook code were intentionally left unchanged per distribution instruction. This ZIP's checked-in implementation still calls Flutterwave `/v3/payments` and `/v3/transactions/.../verify`; it is not evidence of a verified Flutterwave v4 integration. No Google Play Billing migration was added.
+
+### Workstream 3 — AI verification
+- Added a deterministic headless formation contract harness for 20 units and 1,800 ticks. This is a lightweight movement contract test, not a Phaser runtime AI simulation.
+
+### Workstream 5 — Native WebView and entry path
+- Changed the Vite entry script to a relative path for packaged/base-path resilience.
+- Service-worker registration is now skipped in native Capacitor builds, avoiding stale offline shell interception in the APK.
+
+### Workstream 6 — Capacitor lifecycle
+- Added Android back-button routing and app background/foreground pause/resume handling for the Phaser scene, with wallet/entitlement reconciliation on resume.
+- Made generated MainActivity output idempotent in `scripts/configure-android.mjs`.
+
+### Verification limits
+- Catalog, asset, economy-contract and headless formation tests were run after these changes. TypeScript/Vite build and Android APK/AAB were not verified because project dependencies could not be installed in this environment.
+
+
+## v17 follow-up wiring (2026-10-25)
+- Added an authenticated payment-status endpoint so a native WebView can reconcile a checkout after app resume without granting from client claims.
+- Persisted pending payment references and coin-purchase idempotency keys in localStorage so retries can survive WebView recreation.
+- Added server-transactional daily bonus claims and ledger records; the UI now uses the server wallet result instead of directly minting the 100-coin bonus.
+- Bound replayed idempotency keys to the original action and item, rejecting key reuse for another purchase.
+- Prevented checkout initiation for already-owned squad tiers and weapons.
+- Added a ledger entry for webhook-verified cash purchases, including payment reference, NGN amount, transaction ID, and coin balance before/after.
+- Billing provider calls were intentionally not migrated or rewritten. Audit note: the currently checked-in backend uses Flutterwave `/v3` endpoints, so it does not substantiate the requested v4 billing claim.
+
+## v17 gameplay completion update (2026-10-25)
+- Added a one-time starter grant of 3 Phase Veil magic charges for new and legacy saves, tracked by a save migration marker.
+- Phase Veil now makes the soldier visually translucent and undetectable/invulnerable for exactly 5 seconds; enemies remain killable by the player. Additional single charges can be purchased for 70 coins, with existing multi-charge packs retained.
+- Removed level time-expiry failure for non-Survival missions and removed the countdown from the HUD; levels have no time limit.
+- Successful level completion now grants exactly 300 coins, displayed in a custom animated mission-complete reward banner.
+- Added `npm run test:gameplay-rules` static contract checks for the requested rules.
