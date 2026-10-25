@@ -229,3 +229,8 @@ See MOVEMENT_VIEW_V16.md: faster movement, alternating-leg walk cycle and firing
 - Removed level time-expiry failure for non-Survival missions and removed the countdown from the HUD; levels have no time limit.
 - Successful level completion now grants exactly 300 coins, displayed in a custom animated mission-complete reward banner.
 - Added `npm run test:gameplay-rules` static contract checks for the requested rules.
+
+### Build hotfix — Vercel TypeScript errors (2026-10-25)
+- Corrected weather particle storage to accept both Phaser `Arc` (circles) and `Rectangle` (rain/drizzle) objects, matching the actual objects created by the weather renderer.
+- Removed the impossible `projectileKind === 'energy'` comparison; the catalog's inferred projectile union does not include `energy`, and energy-style weapons already use the `bullet` projectile type with weapon-specific visuals.
+- Verification: catalog/assets/economy/AI/gameplay-rule scripts passed. Full `tsc -b` remains unverified because dependencies could not be installed in this environment.
