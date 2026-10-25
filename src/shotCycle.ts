@@ -3,6 +3,11 @@ import { shotPose, kickFromRecoil } from './shotPose';
 
 type Unit = Phaser.GameObjects.Container & Record<string, any>;
 let liveFx = 0;
+
+/** Pose 2 of the reference sheet (rifle shouldered, firing stance), cut out without its baked flash. Side-on, facing right. */
+export const SHOOT_POSE = { key: 'pose-shoot', w: 373, h: 520, tipX: 372, tipY: 111, originX: 0.335, originY: 0.64 };
+/** Weapons that read correctly with the shouldered-rifle art; heavy/exotic weapons keep their own held model. */
+export const POSE_WEAPONS = new Set(['pistol', 'revolver', 'smg', 'assault-rifle', 'carbine', 'marksman', 'machine-gun', 'shotgun']);
 const FX_CAP = 36;
 
 /** Starburst muzzle flash + soft smoke puff, generated once (no extra image files needed). */
@@ -36,6 +41,7 @@ export function triggerShot(scene: Phaser.Scene, unit: Unit, angle: number, weap
   const now = scene.time.now, u = unit as any;
   const prev = Number(u.shotAt || -9999);
   u.shotAt = now;
+  u.shotWeapon = weaponId;
   u.shotKick = kickFromRecoil(recoil);
   u.shotInterval = intervalMs;
   u.flashScale = GUN_FLASH[weaponId] ?? .8;
@@ -75,19 +81,35 @@ export function applyShotPose(scene: Phaser.Scene, unit: Unit, now: number, o: {
   const kick = Number(u.shotKick || 1), interval = Number(u.shotInterval || 400);
   const p = shotPose(since, interval, kick);
   const spr = u.characterSprite as Phaser.GameObjects.Image | undefined;
-  const facing = Math.cos(unit.rotation) >= 0 ? 1 : -1;
+  const rot = unit.rotation;
+  const facing = Math.cos(rot) >= 0 ? 1 : -1;
+  // Pose 2 is held for as long as the unit keeps shooting (and a moment after), for every unit and every rifle-class weapon.
+  const poseOn = !!spr && since >= 0 && since < 700 && !o.reloadPose && POSE_WEAPONS.has(String(u.shotWeapon)) && scene.textures.exists(SHOOT_POSE.key);
+  let bs = 1;
   if (spr) {
+    if (u.baseSprScale === undefined) { u.baseSprScale = spr.scaleX; u.idleKey = spr.texture.key; u.idleOX = spr.originX; u.idleOY = spr.originY; u.idleH = spr.height * spr.scaleX; }
+    if (poseOn && !u.poseActive) { spr.setTexture(SHOOT_POSE.key); spr.setOrigin(SHOOT_POSE.originX, SHOOT_POSE.originY); u.poseActive = true; }
+    else if (!poseOn && u.poseActive) { spr.setTexture(u.idleKey); spr.setOrigin(u.idleOX, u.idleOY); spr.setFlipX(false); u.poseActive = false; }
+    bs = u.poseActive ? Number(u.idleH) / SHOOT_POSE.h : Number(u.baseSprScale);
     const base = u.baseSpriteY ?? spr.y; u.baseSpriteY = base;
-    if (u.baseSprScale === undefined) u.baseSprScale = spr.scaleX;
     const bob = o.moving ? -Math.abs(Math.sin(o.phase)) * 2.6 * o.a : Math.sin(now * .0022 + o.phase) * .55;
     spr.y = base + bob + p.sprY;
     spr.x = p.sprX;
-    const bs = Number(u.baseSprScale);
     spr.scaleX = bs * (1 + p.squash); spr.scaleY = bs * (1 - p.squash * .6);
-    u.shotTilt = -p.tilt * facing; // read by keepUpright()
+    if (u.poseActive) {
+      spr.setFlipX(facing < 0);
+      // The art points straight along the screen's horizontal; tip it toward the real aim direction (up/down) so the rifle tracks the target.
+      const elev = Phaser.Math.Angle.Wrap(facing > 0 ? rot : rot + Math.PI);
+      u.shotTilt = Phaser.Math.Clamp(elev, -1.2, 1.2) * .75 - p.tilt * facing * .6;
+    } else {
+      u.shotTilt = -p.tilt * facing; // read by keepUpright()
+    }
   }
+  const unitLegs = [u.legL, u.legR] as (Phaser.GameObjects.Graphics | undefined)[];
+  for (const l of unitLegs) if (l && l.visible === u.poseActive) l.setVisible(!u.poseActive); // pose art carries its own planted legs
   const gun = unit.getByName('held-gun') as Phaser.GameObjects.Image | null;
   if (gun) {
+    gun.setVisible(!u.poseActive); // the shouldered rifle is part of the pose art
     const aiming = p.phase !== 'idle';
     const raise = aiming ? 0 : (o.moving ? 1.2 : 0);
     const sway = o.moving ? Math.sin(o.phase + Math.PI / 2) * 1.4 * o.a : 0;
@@ -100,10 +122,20 @@ export function applyShotPose(scene: Phaser.Scene, unit: Unit, now: number, o: {
     const show = p.flash > 0;
     flash.setVisible(show);
     if (show) {
-      const len = Number(u.gunLength || 40);
       flash.setScale((.55 + Math.random() * .25) * Number(u.flashScale || .8) * (0.6 + p.flash * .4));
-      flash.setRotation((Math.random() - .5) * .35);
-      flash.x = (gun ? gun.x : 10) + len; flash.y = (gun ? gun.y : 10) + len * Math.sin(gun ? gun.rotation : 0);
+      if (u.poseActive && spr) {
+        // Put the flash on the pose art's barrel tip: sprite-local tip -> screen (tilt + flip) -> container-local.
+        const th = Number(u.shotTilt || 0), ct = Math.cos(th), st = Math.sin(th);
+        const tx = facing * (SHOOT_POSE.tipX - SHOOT_POSE.originX * SHOOT_POSE.w) * bs, ty = (SHOOT_POSE.tipY - SHOOT_POSE.originY * SHOOT_POSE.h) * bs;
+        const cr = Math.cos(rot), sr = Math.sin(rot);
+        const sx = spr.x * cr - spr.y * sr + (tx * ct - ty * st), sy = spr.x * sr + spr.y * cr + (tx * st + ty * ct);
+        flash.x = sx * cr + sy * sr; flash.y = -sx * sr + sy * cr;
+        flash.setRotation((facing > 0 ? 0 : Math.PI) + th - rot + (Math.random() - .5) * .25);
+      } else {
+        const len = Number(u.gunLength || 40);
+        flash.setRotation((Math.random() - .5) * .35);
+        flash.x = (gun ? gun.x : 10) + len; flash.y = (gun ? gun.y : 10) + len * Math.sin(gun ? gun.rotation : 0);
+      }
     }
   }
 }

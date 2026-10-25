@@ -5,4 +5,9 @@ assert.match(game,/triggerShot\(this,shooter,angle/,'player/partner/army shots m
 assert.match(game,/triggerShot\(this,e,shotAngle/,'enemy and boss shots must trigger the firing cycle');
 assert.match(game,/applyShotPose\(this,unit,now/,'pose must be applied to every unit each frame');
 assert.match(game,/shotTilt/,'torso tilt must be applied in keepUpright');
+const cycle=fs.readFileSync(new URL('../src/shotCycle.ts',import.meta.url),'utf8');
+assert.match(cycle,/POSE_WEAPONS\.has\(String\(u\.shotWeapon\)\)/,'pose 2 must be gated by weapon class');
+assert.match(game,/this\.load\.image\('pose-shoot','\/poses\/shoot-pose\.png'\)/,'pose 2 art must be preloaded');
+assert.ok(fs.existsSync(new URL('../public/poses/shoot-pose.png',import.meta.url)),'pose 2 art file must ship');
+assert.match(cycle,/setFlipX\(facing < 0\)/,'pose 2 must face the aim direction');
 console.log('Shot-cycle wiring checks passed.');

@@ -11,6 +11,7 @@
     "android:sync": "npx cap sync android && node scripts/configure-android.mjs",
     "test:catalog": "node scripts/check-catalog.mjs",
     "test:shot": "node scripts/test-shot-cycle.mjs",
+    "test:cover": "node scripts/test-cover-grid.mjs",
     "android:diagnose": "node scripts/diagnose-android.mjs",
     "test:diagnostics": "node scripts/diagnose-android.mjs",
     "test:assets": "node scripts/validate-assets.mjs",
